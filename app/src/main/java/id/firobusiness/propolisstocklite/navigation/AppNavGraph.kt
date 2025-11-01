@@ -12,6 +12,6 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "inventory") {
         composable("inventory") { InventoryRoute(onNewSale = { navController.navigate("sales") }) }
-        composable("sales") { SalesRoute(onBack = { navController.popBackStack() }) }
+        composable("sales") { SalesRoute() }
     }
 }

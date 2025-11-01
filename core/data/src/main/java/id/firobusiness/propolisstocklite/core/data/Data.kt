@@ -50,8 +50,18 @@ abstract class AppDb: RoomDatabase() {
 class Repository(private val dao: ProductDao, private val ctx: Context) {
     fun inventory(): Flow<List<ProductEntity>> = dao.observeAll()
 
+    fun getProductsFlow(): Flow<List<ProductEntity>> = dao.observeAll()
+
     suspend fun seedIfEmpty(seed: List<ProductEntity>) {
         if (dao.count() == 0) dao.upsertAll(seed)
+    }
+
+    suspend fun addProduct(product: ProductEntity) {
+        dao.upsert(product)
+    }
+
+    suspend fun updateProduct(product: ProductEntity) {
+        dao.upsert(product)
     }
 
     suspend fun adjustStock(id: String, delta: Int): Boolean =

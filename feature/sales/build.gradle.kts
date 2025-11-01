@@ -48,4 +48,5 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:${project.findProperty("hiltVersion")}")
     kapt("com.google.dagger:hilt-android-compiler:${project.findProperty("hiltVersion")}")
+    implementation("androidx.hilt:hilt-navigation-compose:${project.findProperty("hiltNavCompose")}")
 }
