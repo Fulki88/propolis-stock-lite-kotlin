@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android Studio
+.idea/
+*.iml
+.local.properties
+
+# OS files
+.DS_Store
+
+# Keystores
+*.jks
+*.keystore
+
+# Logs
+*.log
+
+# APK/AAB artifacts
+*.apk
+*.aab
+
+# Generated
+captures/

@@ -1,0 +1,37 @@
+{
+  "products": [
+    {
+      "id": "p-gold-10",
+      "sku": "BP-GOLD-10",
+      "name": "British Propolis Gold",
+      "variant": "10ml",
+      "unitPrice": 250000,
+      "unitCost": 150000,
+      "stockQty": 50,
+      "minStock": 5,
+      "isActive": true
+    },
+    {
+      "id": "p-kids-10",
+      "sku": "BP-KIDS-10",
+      "name": "British Propolis Kids",
+      "variant": "10ml",
+      "unitPrice": 200000,
+      "unitCost": 120000,
+      "stockQty": 30,
+      "minStock": 5,
+      "isActive": true
+    },
+    {
+      "id": "p-green-10",
+      "sku": "BP-GREEN-10",
+      "name": "British Propolis Green",
+      "variant": "10ml",
+      "unitPrice": 230000,
+      "unitCost": 140000,
+      "stockQty": 20,
+      "minStock": 5,
+      "isActive": true
+    }
+  ]
+}
