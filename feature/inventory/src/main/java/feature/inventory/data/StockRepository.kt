@@ -14,16 +14,24 @@ class StockRepository @Inject constructor(
             val response = apiService.getStocks(StockRequest(pageNum, pageSize))
             if (response.isSuccessful) {
                 val body = response.body()
-                if (!body.isNullOrEmpty() && body.first().success) {
-                    Result.success(body.first().result)
+                if (body != null && body.success) {
+                    Result.success(body.result)
                 } else {
-                    Result.failure(Exception(body?.firstOrNull()?.errorDetails ?: "Unknown error"))
+                    val errorMessage = when {
+                        body?.errorDetails != null -> "API Error: ${body.errorDetails}"
+                        body != null && !body.success -> "API returned success=false"
+                        body == null -> "Empty response body"
+                        else -> "Unknown API error"
+                    }
+                    Result.failure(Exception(errorMessage))
                 }
             } else {
-                Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
+                val errorMessage = "HTTP ${response.code()}: ${response.message()}"
+                Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            val errorMessage = "Network error: ${e.message ?: e.javaClass.simpleName}"
+            Result.failure(Exception(errorMessage, e))
         }
     }
     

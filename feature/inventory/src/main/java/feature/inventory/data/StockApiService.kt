@@ -38,5 +38,5 @@ data class StockItem(
 interface StockApiService {
     @Headers("Content-Type: application/json")
     @POST("webhook/bp/query")
-    suspend fun getStocks(@Body request: StockRequest): Response<List<StockResponse>>
+    suspend fun getStocks(@Body request: StockRequest): Response<StockResponse>
 }
