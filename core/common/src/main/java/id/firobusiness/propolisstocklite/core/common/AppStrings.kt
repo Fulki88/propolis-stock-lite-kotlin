@@ -27,4 +27,15 @@ object AppStrings {
     
     // Error Messages
     const val UNKNOWN_ERROR = "Unknown error"
+    
+    // Cart/Sale Functionality
+    const val TOTAL_PRICE = "Total: Rp %,.0f"
+    const val TOTAL_ITEMS_CART = "Items: %d"
+    const val QUANTITY = "Qty: %d"
+    const val ADD_ITEM = "+"
+    const val REMOVE_ITEM = "-"
+    const val ENTER_QUANTITY = "Enter quantity"
+    const val QUANTITY_DIALOG_TITLE = "Set Quantity"
+    const val CONFIRM = "Confirm"
+    const val CANCEL = "Cancel"
 }

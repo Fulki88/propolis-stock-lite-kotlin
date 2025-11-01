@@ -1,18 +1,31 @@
 package feature.inventory
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +40,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import id.firobusiness.propolisstocklite.core.common.AppColors
 
 @HiltViewModel
 class InventoryVm @Inject constructor(
@@ -37,7 +51,7 @@ class InventoryVm @Inject constructor(
     val uiState: StateFlow<InventoryState> = _uiState.asStateFlow()
     
     private var currentPage = 1
-    private val pageSize = 30
+    private val pageSize = 50
     
     init {
         loadStocks()
@@ -92,14 +106,74 @@ class InventoryVm @Inject constructor(
             loadStocks()
         }
     }
+    
+    fun toggleSaleMode() {
+        _uiState.value = _uiState.value.copy(
+            isInSaleMode = !_uiState.value.isInSaleMode,
+            cartItems = if (_uiState.value.isInSaleMode) emptyMap() else _uiState.value.cartItems
+        )
+    }
+    
+    fun addToCart(stockItem: StockItem) {
+        val currentCart = _uiState.value.cartItems.toMutableMap()
+        val existingItem = currentCart[stockItem.name]
+        
+        if (existingItem != null) {
+            currentCart[stockItem.name] = existingItem.copy(quantity = existingItem.quantity + 1)
+        } else {
+            currentCart[stockItem.name] = CartItem(stockItem, 1)
+        }
+        
+        _uiState.value = _uiState.value.copy(cartItems = currentCart)
+    }
+    
+    fun removeFromCart(stockItem: StockItem) {
+        val currentCart = _uiState.value.cartItems.toMutableMap()
+        val existingItem = currentCart[stockItem.name]
+        
+        if (existingItem != null && existingItem.quantity > 1) {
+            currentCart[stockItem.name] = existingItem.copy(quantity = existingItem.quantity - 1)
+        } else {
+            currentCart.remove(stockItem.name)
+        }
+        
+        _uiState.value = _uiState.value.copy(cartItems = currentCart)
+    }
+    
+    fun setQuantity(stockItem: StockItem, quantity: Int) {
+        val currentCart = _uiState.value.cartItems.toMutableMap()
+        
+        if (quantity > 0) {
+            currentCart[stockItem.name] = CartItem(stockItem, quantity)
+        } else {
+            currentCart.remove(stockItem.name)
+        }
+        
+        _uiState.value = _uiState.value.copy(cartItems = currentCart)
+    }
+    
+    fun getTotalItems(): Int {
+        return _uiState.value.cartItems.values.sumOf { it.quantity }
+    }
+    
+    fun getTotalPrice(): Double {
+        return _uiState.value.cartItems.values.sumOf { it.stockItem.price * it.quantity }.toDouble()
+    }
 }
+
+data class CartItem(
+    val stockItem: StockItem,
+    val quantity: Int = 0
+)
 
 data class InventoryState(
     val items: List<StockItem> = emptyList(),
+    val cartItems: Map<String, CartItem> = emptyMap(),
     val isLoading: Boolean = false,
     val hasMore: Boolean = true,
     val total: Int = 0,
-    val error: String? = null
+    val error: String? = null,
+    val isInSaleMode: Boolean = false
 )
 
 @Composable
@@ -136,10 +210,12 @@ fun InventoryRoute(onNewSale: () -> Unit) {
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onNewSale
-            ) {
-                Text(AppStrings.NEW_SALE)
+            if (!state.isInSaleMode) {
+                ExtendedFloatingActionButton(
+                    onClick = { vm.toggleSaleMode() }
+                ) {
+                    Text(AppStrings.NEW_SALE)
+                }
             }
         }
     ) { padding ->
@@ -148,8 +224,41 @@ fun InventoryRoute(onNewSale: () -> Unit) {
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            // Header with total count
-            if (state.total > 0) {
+            // Header with total count or cart info
+            if (state.isInSaleMode && state.cartItems.isNotEmpty()) {
+                // Cart summary header
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .border(2.dp, AppColors.BorderGreen, RoundedCornerShape(12.dp)),
+                    colors = CardDefaults.cardColors(
+                        containerColor = AppColors.BackgroundGreen
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = String.format(AppStrings.TOTAL_ITEMS_CART, vm.getTotalItems()),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = AppColors.TextGreenDark,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = String.format(AppStrings.TOTAL_PRICE, vm.getTotalPrice()),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = AppColors.TextGreenDark,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            } else if (!state.isInSaleMode && state.total > 0) {
+                // Regular inventory header
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,7 +268,24 @@ fun InventoryRoute(onNewSale: () -> Unit) {
                     )
                 ) {
                     Text(
-                        text = String.format(AppStrings.TOTAL_ITEMS, state.total),
+                        text = if (state.isInSaleMode) AppStrings.NEW_SALE else String.format(AppStrings.TOTAL_ITEMS, state.total),
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            } else if (state.isInSaleMode) {
+                // New Sale header when cart is empty
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Text(
+                        text = AppStrings.NEW_SALE,
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -176,7 +302,14 @@ fun InventoryRoute(onNewSale: () -> Unit) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.items) { item ->
-                        InventoryRow(item)
+                        InventoryRow(
+                            item = item,
+                            isInSaleMode = state.isInSaleMode,
+                            cartQuantity = state.cartItems[item.name]?.quantity ?: 0,
+                            onAddToCart = { vm.addToCart(item) },
+                            onRemoveFromCart = { vm.removeFromCart(item) },
+                            onSetQuantity = { quantity -> vm.setQuantity(item, quantity) }
+                        )
                     }
                     
                     // Loading indicator at bottom
@@ -268,7 +401,16 @@ fun InventoryRoute(onNewSale: () -> Unit) {
 }
 
 @Composable
-private fun InventoryRow(item: StockItem) {
+private fun InventoryRow(
+    item: StockItem,
+    isInSaleMode: Boolean,
+    cartQuantity: Int,
+    onAddToCart: () -> Unit,
+    onRemoveFromCart: () -> Unit,
+    onSetQuantity: (Int) -> Unit
+) {
+    var showQuantityDialog by remember { mutableStateOf(false) }
+    
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
@@ -294,21 +436,158 @@ private fun InventoryRow(item: StockItem) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
+                if (isInSaleMode) {
+                    // Quantity controls for sale mode
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Minus button
+                        IconButton(
+                            onClick = onRemoveFromCart,
+                            enabled = cartQuantity > 0,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(
+                                    if (cartQuantity > 0) MaterialTheme.colorScheme.error else Color.Gray,
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = AppStrings.REMOVE_ITEM,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        
+                        // Quantity display (clickable)
+                        Text(
+                            text = cartQuantity.toString(),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (cartQuantity > 0) AppColors.TextGreenDark else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .clickable { showQuantityDialog = true }
+                                .background(
+                                    if (cartQuantity > 0) AppColors.BackgroundGreen else Color.Transparent,
+                                    RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 12.dp, vertical = 4.dp)
+                                .widthIn(min = 32.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        // Plus button
+                        IconButton(
+                            onClick = onAddToCart,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(AppColors.SuccessGreen, CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = AppStrings.ADD_ITEM,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                } else {
+                    // Available stock indicator for normal mode
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = AppColors.BackgroundGreen
+                        )
+                    ) {
+                        Text(
+                            text = AppStrings.AVAILABLE_STOCK,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppColors.AvailableGreen,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+    }
+    
+    // Quantity input dialog
+    if (showQuantityDialog) {
+        QuantityDialog(
+            currentQuantity = cartQuantity,
+            onQuantitySet = { newQuantity ->
+                onSetQuantity(newQuantity)
+                showQuantityDialog = false
+            },
+            onDismiss = { showQuantityDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun QuantityDialog(
+    currentQuantity: Int,
+    onQuantitySet: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var quantity by remember { mutableStateOf(currentQuantity.toString()) }
+    
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = AppStrings.QUANTITY_DIALOG_TITLE,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                OutlinedTextField(
+                    value = quantity,
+                    onValueChange = { newValue ->
+                        // Only allow digits
+                        if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                            quantity = newValue
+                        }
+                    },
+                    label = { Text(AppStrings.ENTER_QUANTITY) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = AppStrings.AVAILABLE_STOCK,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(AppStrings.CANCEL)
+                    }
+                    
+                    Button(
+                        onClick = {
+                            val newQuantity = quantity.toIntOrNull() ?: 0
+                            onQuantitySet(newQuantity)
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(AppStrings.CONFIRM)
+                    }
                 }
             }
         }
     }
 }
-
-// Removed seed functionality as we're now using API data
