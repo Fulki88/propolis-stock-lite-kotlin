@@ -1,13 +1,36 @@
-# Propolis Stock Lite
+# Propolis Stock Lite Kotlin
 
-A **modular, Kotlin-first** Android app scaffold for a solo seller to track British Propolis inventory and sales.
+A modern Android application for managing propolis stock inventory built with Kotlin and Jetpack Compose.
 
-- Package ID: `id.firobusiness.propolisstocklite`
-- Modules: `app`, `core:common`, `core:designsystem`, `core:data` (Room + seed), `feature:inventory`, `feature:sales`
-- UI: Jetpack **Compose** + Material3
-- DI: **Hilt**
-- Min/Target SDK: 24 / 35
-- JDK: **17** (required)
+## 🚀 Features
+
+- **Modern UI/UX**: Beautiful Material Design 3 interface with custom color palette
+- **Stock Management**: Create, view, and manage propolis inventory
+- **Purchase System**: Handle buyer purchases with ease
+- **Multi-module Architecture**: Clean, maintainable code structure
+- **Dark/Light Theme**: Automatic theme switching based on system preference
+- **Responsive Design**: Optimized for various screen sizes
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary Dark Red**: `#780000` - Deep, professional red
+- **Primary Red**: `#c1121f` - Vibrant primary color
+- **Primary Cream**: `#fdf0d5` - Warm, elegant cream
+- **Primary Dark Blue**: `#003049` - Professional dark blue
+- **Primary Light Blue**: `#669bbc` - Calm, trustworthy blue
+
+## 🛠️ Technical Stack
+
+- **Language**: Kotlin
+- **UI Framework**: Jetpack Compose
+- **Architecture**: Multi-module MVVM
+- **Dependency Injection**: Hilt
+- **Build System**: Gradle with Kotlin DSL
+- **Material Design**: Material 3
+- **Minimum SDK**: 24 (Android 7.0)
+- **Target SDK**: 35 (Android 15)
+- **JDK**: 17 (required)
 - Kotlin: **1.9.24**, AGP **8.4.2**, Compose Compiler **1.5.14**
 
 ## Run

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">Propolis Stock Lite</string>
+    
+    <!-- Navigation and Titles -->
+    <string name="home_title">Propolis Stock Management</string>
+    <string name="inventory_title">Inventory</string>
+    <string name="create_stock_title">Create Stock</string>
+    <string name="sales_title">Buyer Purchase System</string>
+    
+    <!-- Home Screen -->
+    <string name="welcome_message">Welcome to Propolis Stock Management</string>
+    <string name="app_subtitle">Manage your propolis inventory efficiently</string>
+    <string name="menu_create_stock">Create Stock</string>
+    <string name="menu_create_stock_subtitle">Add new products</string>
+    <string name="menu_stock_list">Stock List</string>
+    <string name="menu_stock_list_subtitle">View inventory</string>
+    <string name="menu_buyer_purchase">Buyer Purchase</string>
+    <string name="menu_buyer_purchase_subtitle">Create sale</string>
+    
+    <!-- Create Stock Screen -->
+    <string name="create_stock_description">Add new product to inventory</string>
+    <string name="label_sku">Product SKU</string>
+    <string name="label_product_name">Product Name</string>
+    <string name="label_price">Price</string>
+    <string name="label_stock_quantity">Stock Quantity</string>
+    <string name="hint_sku">Enter SKU (e.g., PROP001)</string>
+    <string name="hint_product_name">Enter product name</string>
+    <string name="hint_price">Enter price</string>
+    <string name="hint_stock_quantity">Enter quantity</string>
+    <string name="button_add_product">Add Product</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    
+    <!-- Sales Screen -->
+    <string name="available_products">Available Products</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="button_add_to_cart">Add to Cart</string>
+    <string name="button_complete_purchase">Complete Purchase</string>
+    <string name="total_price">Total: $%.2f</string>
+    <string name="price_format">Price: $%d</string>
+    <string name="stock_format">Stock: %d</string>
+    <string name="quantity_format">Qty: %d</string>
+    <string name="subtotal_format">Subtotal: $%d</string>
+    
+    <!-- Inventory Screen -->
+    <string name="inventory_empty">No products in inventory</string>
+    <string name="new_sale">New Sale</string>
+    <string name="variant_format">Variant: %s</string>
+    <string name="variant_none">-</string>
+    <string name="min_stock_format">Min: %d</string>
+    
+    <!-- Common Labels -->
+    <string name="sku_label">SKU:</string>
+    <string name="name_label">Name:</string>
+    <string name="price_label">Price:</string>
+    <string name="stock_label">Stock:</string>
+    <string name="quantity_label">Quantity:</string>
+    
+    <!-- Messages -->
+    <string name="product_added_success">Product added successfully</string>
+    <string name="purchase_completed">Purchase completed successfully</string>
+    <string name="error_invalid_input">Please fill all required fields</string>
+    <string name="error_invalid_price">Please enter a valid price</string>
+    <string name="error_invalid_quantity">Please enter a valid quantity</string>
+    <string name="out_of_stock">Out of Stock</string>
+    <string name="low_stock_warning">Low Stock</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_menu_icon">Menu icon</string>
+    <string name="cd_add_icon">Add icon</string>
+    <string name="cd_list_icon">List icon</string>
+    <string name="cd_cart_icon">Shopping cart icon</string>
+    <string name="cd_remove_icon">Remove icon</string>
+    
+    <!-- Currency -->
+    <string name="currency_symbol">$</string>
+    <string name="currency_format">$%s</string>
+</resources>
