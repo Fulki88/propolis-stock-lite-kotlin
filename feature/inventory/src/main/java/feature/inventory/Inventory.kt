@@ -46,7 +46,11 @@ fun InventoryRoute(onNewSale: () -> Unit) {
     Scaffold(
         topBar = { AppTopBar("Inventory") },
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = onNewSale, text = { Text("New Sale") })
+            ExtendedFloatingActionButton(
+                onClick = onNewSale
+            ) {
+                Text("New Sale")
+            }
         }
     ) { padding ->
         LazyColumn(Modifier.padding(padding).padding(16.dp)) {

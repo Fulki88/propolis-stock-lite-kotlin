@@ -7,12 +7,11 @@ plugins {
 
 
 android {
-    namespace "id.firobusiness.propolisstocklite.core.data"
+    namespace = "id.firobusiness.propolisstocklite.core.data"
     compileSdk = 35
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 35
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -22,7 +21,7 @@ android {
         buildConfig = false
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "${composeCompiler}"
+        kotlinCompilerExtensionVersion = "${project.findProperty("composeCompiler")}"
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -37,15 +36,15 @@ android {
 dependencies {
     implementation(project(":core:common"))
 
-    implementation("androidx.datastore:datastore-preferences:${datastoreVersion}")
+    implementation("androidx.datastore:datastore-preferences:${project.findProperty("datastoreVersion")}")
 
-    implementation("androidx.room:room-runtime:${roomVersion}")
-    implementation("androidx.room:room-ktx:${roomVersion}")
-    kapt("androidx.room:room-compiler:${roomVersion}")
+    implementation("androidx.room:room-runtime:${project.findProperty("roomVersion")}")
+    implementation("androidx.room:room-ktx:${project.findProperty("roomVersion")}")
+    kapt("androidx.room:room-compiler:${project.findProperty("roomVersion")}")
 
-    implementation("com.google.dagger:hilt-android:${hiltVersion}")
-    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
+    implementation("com.google.dagger:hilt-android:${project.findProperty("hiltVersion")}")
+    kapt("com.google.dagger:hilt-android-compiler:${project.findProperty("hiltVersion")}")
 
-    implementation(platform("androidx.compose:compose-bom:${composeBom}"))
+    implementation(platform("androidx.compose:compose-bom:${project.findProperty("composeBom")}"))
     implementation("androidx.compose.ui:ui")
 }

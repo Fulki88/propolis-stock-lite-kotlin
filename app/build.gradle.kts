@@ -7,11 +7,11 @@ plugins {
 
 
 android {
-    namespace "id.firobusiness.propolisstocklite"
+    namespace = "id.firobusiness.propolisstocklite"
     compileSdk = 35
 
     defaultConfig {
-        applicationId "id.firobusiness.propolisstocklite"
+        applicationId = "id.firobusiness.propolisstocklite"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -25,7 +25,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "${composeCompiler}"
+        kotlinCompilerExtensionVersion = "${project.findProperty("composeCompiler")}"
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -36,7 +36,7 @@ android {
     }
     packaging {
         resources {
-            excludes += ["/META-INF/{AL2.0}", "/META-INF/{LGPL2.1}"]
+            excludes += setOf("/META-INF/{AL2.0}", "/META-INF/{LGPL2.1}")
         }
     }
 }
@@ -49,17 +49,17 @@ dependencies {
     implementation(project(":feature:inventory"))
     implementation(project(":feature:sales"))
 
-    implementation(platform("androidx.compose:compose-bom:${composeBom}"))
-    implementation("androidx.core:core-ktx:${coreKtx}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${lifecycleRuntimeKtx}")
-    implementation("androidx.activity:activity-compose:${activityComposeVersion}")
+    implementation(platform("androidx.compose:compose-bom:${project.findProperty("composeBom")}"))
+    implementation("androidx.core:core-ktx:${project.findProperty("coreKtx")}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${project.findProperty("lifecycleRuntimeKtx")}")
+    implementation("androidx.activity:activity-compose:${project.findProperty("activityComposeVersion")}")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:${material3Version}")
-    implementation("androidx.navigation:navigation-compose:${navigationCompose}")
-    implementation("androidx.hilt:hilt-navigation-compose:${hiltNavCompose}")
+    implementation("androidx.compose.material3:material3:${project.findProperty("material3Version")}")
+    implementation("androidx.navigation:navigation-compose:${project.findProperty("navigationCompose")}")
+    implementation("androidx.hilt:hilt-navigation-compose:${project.findProperty("hiltNavCompose")}")
 
-    implementation("com.google.dagger:hilt-android:${hiltVersion}")
-    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
+    implementation("com.google.dagger:hilt-android:${project.findProperty("hiltVersion")}")
+    kapt("com.google.dagger:hilt-android-compiler:${project.findProperty("hiltVersion")}")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
